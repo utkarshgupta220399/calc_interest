@@ -1,0 +1,109 @@
+<html>
+    <body>
+        <form id="calc" method="get" >
+            <p>day :</p>
+            <input type="text" id="day">
+            <p>month :</p>
+            <input type="text" id="month">
+            <p >year :</p>
+            <input type="text" id="year">
+            <br>
+            <p>amount :</p>
+            <input type="text" id="amount">
+            <br>
+            <br>
+            <br>
+            <p> final amount is :</p>
+            <p id="final_amount">
+            <br>
+            <br>
+            <br>
+            <input type="submit" onclick=calculate()>
+             
+        </form>
+        <script >
+
+            function dateDiff(startingDate, endingDate) {
+                var startDate = new Date(new Date(startingDate).toISOString().substr(0, 10));
+                if (!endingDate) {
+                    endingDate = new Date().toISOString().substr(0, 10);    // need date in YYYY-MM-DD format
+                }
+                var endDate = new Date(endingDate);
+                if (startDate > endDate) {
+                    var swap = startDate;
+                    startDate = endDate;
+                    endDate = swap;
+                }
+                var startYear = startDate.getFullYear();
+                var february = (startYear % 4 === 0 && startYear % 100 !== 0) || startYear % 400 === 0 ? 29 : 28;
+                var daysInMonth = [31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+                var yearDiff = endDate.getFullYear() - startYear;
+                var monthDiff = endDate.getMonth() - startDate.getMonth();
+                if (monthDiff < 0) {
+                    yearDiff--;
+                    monthDiff += 12;
+                }
+                var dayDiff = endDate.getDate() - startDate.getDate();
+                if (dayDiff < 0) {
+                    if (monthDiff > 0) {
+                        monthDiff--;
+                    } else {
+                        yearDiff--;
+                        monthDiff = 11;
+                    }
+                    dayDiff += daysInMonth[startDate.getMonth()];
+                }
+
+                return [yearDiff,monthDiff,dayDiff]//yearDiff + 'Y ' + monthDiff + 'M ' + dayDiff + 'D';
+            }
+
+            function calculate(){
+                const day=document.getElementById('day').value
+                const mth=document.getElementById('month').value
+                const year=document.getElementById('year').value
+
+                let amount=parseInt(document.getElementById('amount').value)
+                let dy_earlier=parseInt(day)
+                let dy_today=parseInt(new Date().toISOString().slice(8, 10))
+                let month=parseInt(new Date().toISOString().slice(5,7))
+                let yr=parseInt(new Date().toISOString().slice(0,4))
+
+                if (dy_earlier>dy_today){
+                    if (month==1 ||month==5 || month==7 || month==8 ||month==10 ||month==12){
+                        dy=30-dy_earlier+dy_today
+                    }
+                    if (month==3 && yr%4==0 ){
+                        dy=29-dy_earlier+dy_today
+                    }
+                    else if(month==3 && yr%4!=0 ){
+                        dy=28-dy_earlier+dy_today
+                    }
+                    if (month==2 ||month==4 || month==6 || month==9 ||month==11){
+                        dy=31-dy_earlier+dy_today
+                    }
+                }
+                else{
+                    dy=dy_today-dy_earlier
+                }
+
+                var date=year+'-'+mth+'-'+day
+                
+                var diff=dateDiff(date)
+
+                var y=diff[0];
+                var m=diff[1];
+                //var d=diff[2];
+                console.log(dy)
+                dy--;
+                while (y>0){
+                    amount=amount*1.18;
+                    y--;
+                }
+                amount=amount+((amount/100)*(1.5*m+(Math.ceil(dy/10)*0.5)))
+
+                document.getElementById('final_amount').innerHTML=amount
+            }
+        </script>
+    </body>
+</html>
